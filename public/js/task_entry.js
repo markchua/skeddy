@@ -31,7 +31,7 @@ function parseFreeformTask(freeform) {
 }
 
 function extractTimeEstimate(parseObj) {
-  var TIME_EST_REGEX = /((?:\d+(?:\.\d+)?\s?(?:minute|hour)s?\s?){1,2})(.*)/g;
+  var TIME_EST_REGEX = /(for\s)?((?:\d+(?:\.\d+)?\s?(?:minute|hour)s?\s?){1,2})(.*)/g;
 
   var langTokens = parseObj.langTokens;
   for (var i = 0; i < langTokens.length; i++) {
@@ -39,9 +39,10 @@ function extractTimeEstimate(parseObj) {
 
     var match = TIME_EST_REGEX.exec(token);
     if (match != null) {
-      parseObj.taskTimeEstimate = convertTimeEstimateStringToMinutesValue(match[1]);
-      var leadStrLength = token.length - match[1].length - match[2].length;
-      var newTokens = new Array(token.substring(0, leadStrLength), match[2]);
+      parseObj.taskTimeEstimate = convertTimeEstimateStringToMinutesValue(match[2]);
+      var leadStrLength = token.length - (!!match[1] ? match[1].length : 0) -
+          (!!match[2] ? match[2].length : 0) - (!!match[3] ? match[3].length : 0);
+      var newTokens = new Array(token.substring(0, leadStrLength), match[3]);
       parseObj.remainingTokens = splitTokens(langTokens, i, newTokens);
       return parseObj;
     } else {
