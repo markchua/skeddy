@@ -23,7 +23,6 @@ function parseFreeformTask(freeform) {
   };
 
   parseObj = extractTimeEstimate(parseObj);
-  parseObj = extractTime(parseObj);
   parseObj = extractLocation(parseObj);
   parseObj = extractTask(parseObj);
   parseObj = extractNotes(parseObj);
