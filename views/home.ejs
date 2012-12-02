@@ -16,11 +16,6 @@
         <div class="span5 offset1">
           <h3>Tasks</h3>
           <ul id="todo-list">
-            <li>Test</li>
-            <li>Test</li>
-            <li>Test</li>
-            <li>Test</li>
-            <li>Test</li>
           </ul>
         </div>
         <div class="span4 well">
@@ -60,7 +55,13 @@
           });
         });
 
-        $('#todo-list').children().remove();
+        FB.child('todo_list').on('value', function(data) {
+          $('#todo-list').children().remove();
+          data.forEach(function(item) {
+            // TODO: Populate with the right values
+            $('#todo-list').append('<li>' + item.val().text + '</li>');
+          });
+        });
       });
 
     </script>
