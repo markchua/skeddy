@@ -15,7 +15,7 @@ function parseFreeformTask(freeform) {
 }
 
 function extractTime(langTokens) {
-  var TIME_REGEX = /(\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)?)/g;
+  var TIME_REGEX = /(\d{1,2}(?::\d{2})?\s?(?:a\.?m\.?|p\.?m\.?)?)/g;
   var AT_TIME_REGEX = new RegExp("(at\\s)" + TIME_REGEX.source);
   var FULL_TIME_REGEX = new RegExp("()" + TIME_REGEX.source);  // The extra () group ensures our group counts are consistent.
   var FULL_AT_TIME_REGEX = new RegExp(AT_TIME_REGEX.source);
@@ -67,10 +67,15 @@ function extractTask(remainingTokens) {
 }
 
 function extractNotes(remainingTokens) {
-  var endIndex = remainingTokens.length - 1;
-  var endToken = remainingTokens[endIndex];
-  $("#task_notes").text(endToken);
-  return remainingTokens.slice(0, endIndex);
+  if (remainingTokens.length > 0) {
+    var endIndex = remainingTokens.length - 1;
+    var endToken = remainingTokens[endIndex];
+    $("#task_notes").text(endToken);
+    return remainingTokens.slice(0, endIndex);
+  } else {
+    $("#task_notes").text("");
+    return remainingTokens;
+  }
 }
 
 function splitTokens(oldTokens, at, newTokens) {
