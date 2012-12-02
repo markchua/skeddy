@@ -16,22 +16,37 @@ function parseFreeformTask(freeform) {
 }
 
 function extractTimeEstimate(langTokens) {
-  var TIME_EST_REGEX = /(\d+\s(?:minute|hour)s?)(.*)/g;
+  var TIME_EST_REGEX = /((?:\d+(?:\.\d+)?\s?(?:minute|hour)s?\s?){1,2})(.*)/g;
 
   for (var i = 0; i < langTokens.length; i++) {
     var token = langTokens[i];
 
     var match = TIME_EST_REGEX.exec(token);
     if (match != null) {
-      $("#task_time_estimate").text(match[1]);
+      $("#task_time_estimate").text(convertTimeEstimateStringToMinutesValue(match[1]));
       var leadStrLength = token.length - match[1].length - match[2].length;
       var newTokens = new Array(token.substring(0, leadStrLength), match[2]);
       return splitTokens(langTokens, i, newTokens);
     } else {
-      $("#task_time_estimate").text("");
+      $("#task_time_estimate").text("0");
     }
     return langTokens;
   }
+}
+
+function convertTimeEstimateStringToMinutesValue(timeStr) {
+  var HOURS_MINUTES_REGEX = /(?:(\d+(?:\.\d+)?)\s?hours?\s?)?(?:(\d+)\s?minutes?)?/g;
+  var match = HOURS_MINUTES_REGEX.exec(timeStr);
+  var minutes = 0;
+  if (match != null) {
+    if (match[1] != null) {
+      minutes += Math.round(parseFloat(match[1]) * 60);
+    }
+    if (match[2] != null) {
+      minutes += parseInt(match[2]);
+    }
+  }
+  return minutes;
 }
 
 function extractTime(remainingTokens) {
@@ -82,8 +97,13 @@ function extractLocation(remainingTokens) {
 }
 
 function extractTask(remainingTokens) {
-  $("#task_name").text(remainingTokens[0]);
-  return remainingTokens.slice(1, remainingTokens.length);
+  if (remainingTokens.length > 0) {
+    $("#task_name").text(remainingTokens[0]);
+    return remainingTokens.slice(1, remainingTokens.length);
+  } else {
+    $("#task_name").text("");
+    return remainingTokens;
+  }
 }
 
 function extractNotes(remainingTokens) {
