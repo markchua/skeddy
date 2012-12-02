@@ -15,7 +15,7 @@
       <div class="row">
         <div class="span5 offset1">
           <h3>Tasks</h3>
-          <ul id="todo-list">
+          <ul id="todo-list" class="unstyled">
           </ul>
         </div>
         <div class="span4 well">
@@ -55,11 +55,18 @@
           });
         });
 
+        $('#todo-list a').live('click', function(e) {
+          e.preventDefault();
+          var itemRef = new Firebase($(this).data('ref'));
+          itemRef.remove();
+        });
+
         FB.child('todo_list').on('value', function(data) {
           $('#todo-list').children().remove();
           data.forEach(function(item) {
+            var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             // TODO: Populate with the right values
-            $('#todo-list').append('<li>' + item.val().text + '</li>');
+            $('#todo-list').append('<li class="todo-item">' + removeIcon + item.val().text + '</li>');
           });
         });
       });
