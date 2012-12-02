@@ -25,19 +25,20 @@
         <div class="span4 well">
           <h3>Add Task</h3>
           <div class="add_task_input input-append span4">
-            <input id="freeform_task" type="text" class="input-large"><button class="btn btn-primary" type="button">Add</button>
+            <input id="freeform_task" type="text" class="input-large">
+            <button id="freeform_task_submit" class="btn btn-primary" type="button">Add</button>
             <div class="task_autofield_container">
               <div class="task_autofield">
                 <span class="task_autofield_label">Task:</span>
                 <span id="task_name" class="task_autofield_value"></span>
               </div>
-              <div class="task_autofield" style="display: none;"><!-- Disable this useless field for now -->
-                <span class="task_autofield_label">Time:</span>
-                <span id="task_time" class="task_autofield_value"></span>
-              </div>
               <div class="task_autofield">
                 <span class="task_autofield_label">Location:</span>
                 <span id="task_location" class="task_autofield_value"></span>
+              </div>
+              <div class="task_autofield" style="display: none;"><!-- Disable this useless field for now -->
+                <span class="task_autofield_label">Time:</span>
+                <span id="task_time" class="task_autofield_value"></span>
               </div>
               <div class="task_autofield">
                 <span class="task_autofield_label">Time Estimate:</span>
@@ -90,14 +91,41 @@
       }
 
       $(function() {
+        $('#freeform_task_submit').click(function(e) {
+          // Read values from auto-populated UI fields and commit them to Firebase.
+          var taskName = $("#task_name").text();
+          var location = $("#task_location").text();
+          var timeEstimate = parseInt($("#task_time_estimate").text());
+          var notes = $("#task_notes").text();
+          FB.child('todo_list').push({
+            'task': taskName,
+            'location': location,
+            'time_estimate': timeEstimate,
+            'notes': notes
+          });
+
+          // Clear all UI fields.
+          $("#freeform_task").val("");
+          $("#task_name").text("");
+          $("#task_location").text("");
+          $("#task_time").text();
+          $("#task_time_estimate").text("0");
+          $("#task_notes").text("");
+        });
+
         $('#filepicker').change(function(e) {
           var fpfile = e.originalEvent.fpfile;
           filepicker.read(fpfile, function(data) {
             var lines = data.split("\n");
             for (var i in lines) {
               var line = lines[i];
-              // parse each line through smart parser
-              FB.child('todo_list').push({'text': line});
+              var parseObj = parseFreeformTask(line);
+              FB.child('todo_list').push({
+                'task': parseObj.taskName,
+                'location': parseObj.taskLocation,
+                'time_estimate': parseObj.taskTimeEstimate,
+                'notes': parseObj.taskNotes
+              });
             }
           });
         });
@@ -112,8 +140,11 @@
           $('#todo-list').children().remove();
           data.forEach(function(item) {
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
-            // TODO: Populate with the right values
-            $('#todo-list').append('<li class="todo-item">' + removeIcon + item.val().text + '</li>');
+            $('#todo-list').append('<li class="todo-item">' + removeIcon +
+                item.val().task + " at " +
+                item.val().location + ", " +
+                item.val().time_estimate + " minute(s), " +
+                item.val().notes + '</li>');
           });
         });
       });
