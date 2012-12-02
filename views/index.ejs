@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="css/bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">&nbsp;</div>
+      <div class="hero-unit">
+        <h1>Skeddy</h1>
+        <p>Not just a TODO list- actually get your stuff done. Log in with twitter, facebook, google, etc.</p>
+        <p>
+          <a target="_blank" href="https://api.singly.com/oauth/authenticate?client_id=ff47da689272e350f27f65f0cf06313d&redirect_uri=http%3A%2F%2Flocalhost%3A7464%2Fcallback&account=false&service=twitter">Log in with Twitter</a>
+        </p>
+      </div>
+      <div class="row">
+        <div class="span4">
+          <h2>Never forget again</h2>
+          <p>We schedule your tasks on your calendar so you never forget to do them again. Who checks their todo list anyway?</p>
+        </div>
+        <div class="span4">
+          <h2>Easily add tasks</h2>
+          <p>Upload your list of tasks from anywhere and let us figure out what they mean.</p>
+        </div>
+        <div class="span4">
+          <h2>Location aware</h2>
+          <p>We'll factor in the extra commute time for each task.</p>
+        </div>
+      </div>
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="https://static.firebase.com/v0/firebase.js"></script>
+    <script type="text/javascript">
+      function loggedIn(singlyId, accessToken) {
+        FB = new Firebase('https://skeddy.firebaseio.com/' + singlyId);
+        FB.set({'access-token': accessToken});
+        window.location = '/'
+      }
+    </script>
+  </body>
+</html>
