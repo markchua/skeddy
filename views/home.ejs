@@ -63,7 +63,7 @@
         <div class="span4">
           <h3>Schedule it!</h3>
           <p>When are you free? <input type="text" id="datepicker" />
-           for <input type="text" id="duration" placeholder="1" /> Hour(s)</p>
+           for <input type="text" id="duration" /> Hour(s)</p>
            <p id="#schedule-tip">
            <button class="btn btn-primary skeddit">Skeddit!</button></p>
         </div>
@@ -159,7 +159,7 @@
           localTodo = [];
           data.forEach(function(item) {
             var itm = item.val();
-            localTodo.push({ref: item.ref(), task: itm.task, loc: itm.location, time: parseInt(itm.time_estimate), notes: itm.notes});
+            localTodo.push({ref: item.ref().toString(), task: itm.task, loc: itm.location, time: parseInt(itm.time_estimate), notes: itm.notes});
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
                 "<div class='todo-item-line1'>" + itm.task + " at " + itm.location + "</div>" +
@@ -176,18 +176,24 @@
           var duration = 60 * parseInt($('#duration').val());
           var schedMe = [];
           var timeSpent = 0;
+          var updatedTime = startTime;
           // find out which ones to sched
           for (var i in localTodo) {
             var todo = localTodo[i];
             var time = todo['time'];
-            if (timeSpent + time < duration) {
-              schedMe.push(todo);
+            if (timeSpent + time < duration && !!todo['task']) {
+              var msg = todo['task'] + " at " + todo['loc'] + " at " + updatedTime.toString("yyyy-MM-dd HH:mm") + " for " + todo['time'] + " mins - " + todo['notes'];
+              schedMe.push({msg: msg, ref: todo['ref']});
+              updatedTime = startTime.add(time).minutes();
             }
           }
           // sched them
           for (var i in schedMe) {
             var todo = schedMe[i];
-            $.ajax({
+            console.log(todo['msg']);
+            var itemRef = new Firebase(todo['ref']);
+            itemRef.remove();
+            /*$.ajax({
               type: "POST",
               url: "/cal",
               data: todo
@@ -195,7 +201,7 @@
               console.log(data);
               var itemRef = new Firebase(data);
               itemRef.remove();
-            });
+            })*/;
           }
         });
       });
