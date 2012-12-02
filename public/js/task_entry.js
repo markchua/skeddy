@@ -98,7 +98,7 @@ function extractTime(parseObj) {
 }
 
 function extractLocation(parseObj) {
-  var LOCATION_REGEX = /(.*)(at\s)([^,;\.]+)/;
+  var LOCATION_REGEX = /(.*)((?:at|from)\s)([^,;\.]+)/;
 
   var remainingTokens = parseObj.remainingTokens;
   for (var i = 0; i < remainingTokens.length; i++) {

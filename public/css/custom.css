@@ -8,6 +8,15 @@
   padding-left: 10px;
 }
 
+.todo-item-task {
+  color: orangeRed;
+  font-weight: bold;
+}
+
+.todo-item-location {
+  color: blue;
+}
+
 .todo-item-notes {
   padding-left: 4px;
 }

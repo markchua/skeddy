@@ -147,7 +147,8 @@
           data.forEach(function(item) {
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
-                "<div class='todo-item-line1'>" + item.val().task + " at " + item.val().location + "</div>" +
+                "<div class='todo-item-line1'><span class='todo-item-task'>" + item.val().task +
+                "</span> at <span class='todo-item-location'>" + item.val().location + "</span></div>" +
                 "<div class='todo-item-line2'><i class='icon-time'></i><span class='todo-item-time-est'>" +
                 item.val().time_estimate + " minute(s)</span>" +
                 (item.val().notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
