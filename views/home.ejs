@@ -92,6 +92,7 @@
 
       $(function() {
         $('#freeform_task_submit').click(function(e) {
+          // Read values from auto-populated UI fields and commit them to Firebase.
           var taskName = $("#task_name").text();
           var location = $("#task_location").text();
           var timeEstimate = parseInt($("#task_time_estimate").text());
@@ -102,6 +103,14 @@
             'time_estimate': timeEstimate,
             'notes': notes
           });
+
+          // Clear all UI fields.
+          $("#freeform_task").val("");
+          $("#task_name").text("");
+          $("#task_location").text("");
+          $("#task_time").text();
+          $("#task_time_estimate").text("0");
+          $("#task_notes").text("");
         });
 
         $('#filepicker').change(function(e) {
