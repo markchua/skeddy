@@ -10,15 +10,17 @@ function parseFreeformTask(freeform) {
   var langTokens = new Array(freeform);
   $("#test1").text(langTokens);
   var remainingTokens = extractTime(langTokens);
+  remainingTokens = extractLocation(remainingTokens);
   remainingTokens = extractTask(remainingTokens);
+  remainingTokens = extractNotes(remainingTokens);
   $("#test2").text(remainingTokens);
 }
 
 function extractTime(langTokens) {
-  var TIME_REGEX = /(\d+\s?(a\.?m\.?|p\.?m\.?))/g;
+  var TIME_REGEX = /(\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)?)/g;
   var AT_TIME_REGEX = new RegExp("(at\\s)" + TIME_REGEX.source);
-  var FULL_TIME_REGEX = new RegExp("(.*)()" + TIME_REGEX.source);  // The extra () group ensures our group counts are consistent.
-  var FULL_AT_TIME_REGEX = new RegExp("(.*)" + AT_TIME_REGEX.source);
+  var FULL_TIME_REGEX = new RegExp("()" + TIME_REGEX.source);  // The extra () group ensures our group counts are consistent.
+  var FULL_AT_TIME_REGEX = new RegExp(AT_TIME_REGEX.source);
 
   for (var i = 0; i < langTokens.length; i++) {
     var token = langTokens[i];
@@ -30,8 +32,11 @@ function extractTime(langTokens) {
     }
 
     if (match != null) {
-      $("#task_time").val(match[3]);
-      var newTokens = new Array(match[1], token.substring(match[1].length + match[2].length + match[3].length));
+      $("#task_time").val(match[2]);
+      var tailStrIndex = token.indexOf(match[2]) + match[2].length;
+      var tailStrLength = token.length - tailStrIndex;
+      var leadStrLength = token.length - match[1].length - match[2].length - tailStrLength;
+      var newTokens = new Array(token.substring(0, leadStrLength), token.substring(tailStrIndex));
       return splitTokens(langTokens, i, newTokens);
     } else {
       $("#task_time").val("");
@@ -40,9 +45,34 @@ function extractTime(langTokens) {
   return langTokens;
 }
 
+function extractLocation(remainingTokens) {
+  var LOCATION_REGEX = /(.*)(at\s)([^\.]+)/;
+
+  for (var i = 0; i < remainingTokens.length; i++) {
+    var token = remainingTokens[i];
+
+    var match = LOCATION_REGEX.exec(token);
+    if (match != null) {
+      $("#task_location").val(match[3]);
+      var newTokens = new Array(match[1], token.substring(match[1].length + match[2].length + match[3].length));
+      return splitTokens(remainingTokens, i, newTokens);
+    } else {
+      $("#task_location").val("");
+    }
+  }
+  return remainingTokens;
+}
+
 function extractTask(remainingTokens) {
   $("#task_name").val(remainingTokens[0]);
   return remainingTokens.slice(1, remainingTokens.length);
+}
+
+function extractNotes(remainingTokens) {
+  var endIndex = remainingTokens.length - 1;
+  var endToken = remainingTokens[endIndex];
+  $("#task_notes").val(endToken);
+  return remainingTokens.slice(0, endIndex);
 }
 
 function splitTokens(oldTokens, at, newTokens) {
@@ -72,5 +102,15 @@ function splitTokens(oldTokens, at, newTokens) {
 }
 
 function trim(strText) {
-  return strText.replace(/^\s+|\s+$/g,'')
+  var result = trimWhitespace(strText);
+  result = trimPunctuation(result);
+  return trimWhitespace(result);
+}
+
+function trimPunctuation(strText) {
+  return strText.replace(/^[,;\.]|[,;\.]$/g, "");
+}
+
+function trimWhitespace(strText) {
+  return strText.replace(/^\s+|\s+$/g, "");
 }
