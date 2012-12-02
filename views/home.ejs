@@ -96,7 +96,12 @@
           var location = $("#task_location").text();
           var timeEstimate = parseInt($("#task_time_estimate").text());
           var notes = $("#task_notes").text();
-          FB.child('todo_list').push({'task': taskName, 'location': location, 'time_estimate': timeEstimate, 'notes': notes});
+          FB.child('todo_list').push({
+            'task': taskName,
+            'location': location,
+            'time_estimate': timeEstimate,
+            'notes': notes
+          });
         });
 
         $('#filepicker').change(function(e) {
@@ -105,8 +110,13 @@
             var lines = data.split("\n");
             for (var i in lines) {
               var line = lines[i];
-              // parse each line through smart parser
-              FB.child('todo_list').push({'text': line});
+              var parseObj = parseFreeformTask(line);
+              FB.child('todo_list').push({
+                'task': parseObj.taskName,
+                'location': parseObj.taskLocation,
+                'time_estimate': parseObj.taskTimeEstimate,
+                'notes': parseObj.taskNotes
+              });
             }
           });
         });
@@ -121,7 +131,6 @@
           $('#todo-list').children().remove();
           data.forEach(function(item) {
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
-            // TODO: Populate with the right values
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
                 item.val().task + " at " +
                 item.val().location + ", " +
