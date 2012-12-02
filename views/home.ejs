@@ -17,16 +17,18 @@
         </div>
       </div>
       <div class="row">
-        <div class="span5">
+        <div class="span6">
           <h3>Tasks</h3>
           <ul id="todo-list" class="unstyled">
           </ul>
         </div>
-        <div class="span4 well">
+        <div class="span4 offset1 well">
           <h3>Add Task</h3>
-          <div class="add_task_input input-append span4">
-            <input id="freeform_task" type="text" class="input-large">
-            <button id="freeform_task_submit" class="btn btn-primary" type="button">Add</button>
+          <div class="add_task_input input-append span5">
+            <form class="form-inline">
+              <input id="freeform_task" type="text" class="input-xlarge">
+              <button id="freeform_task_submit" class="btn btn-primary" type="button">Add</button>
+            </form>
             <div class="task_autofield_container">
               <div class="task_autofield">
                 <span class="task_autofield_label">Task:</span>
@@ -51,7 +53,11 @@
               </div>
             </div>
           </div>
-          <p>Or upload a todo list from a file <input id="filepicker" type="filepicker-dragdrop"/></p>
+          <p>Or upload a todo list from a file
+            <form class="form-inline">
+              <input id="filepicker" type="filepicker-dragdrop"/>
+            </form>
+          </p>
         </div>
         <div class="span12">
           <hr>
@@ -109,7 +115,7 @@
           $("#task_name").text("");
           $("#task_location").text("");
           $("#task_time").text();
-          $("#task_time_estimate").text("0");
+          $("#task_time_estimate").text("0sk");
           $("#task_notes").text("");
         });
 
@@ -141,10 +147,11 @@
           data.forEach(function(item) {
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
-                item.val().task + " at " +
-                item.val().location + ", " +
-                item.val().time_estimate + " minute(s), " +
-                item.val().notes + '</li>');
+                "<div class='todo-item-line1'>" + item.val().task + " at " + item.val().location + "</div>" +
+                "<div class='todo-item-line2'><i class='icon-time'></i><span class='todo-item-time-est'>" +
+                item.val().time_estimate + " minute(s)</span>" +
+                (item.val().notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
+                item.val().notes + "</span>" : "") + "</div></li>");
           });
         });
       });
