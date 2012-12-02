@@ -182,7 +182,7 @@
             var todo = localTodo[i];
             var time = todo['time'];
             if (timeSpent + time < duration && !!todo['task']) {
-              var msg = todo['task'] + " at " + todo['loc'] + " at " + updatedTime.toString("yyyy-MM-dd HH:mm") + " for " + todo['time'] + " mins - " + todo['notes'];
+              var msg = todo['task'] + " at " + todo['loc'] + " " + updatedTime.toString("yyyy-MM-dd HH:mm") + " for " + todo['time'] + " mins " + (!!todo['notes'] ? "(" + todo['notes'] + ")" : "");
               schedMe.push({msg: msg, ref: todo['ref']});
               updatedTime = startTime.add(time).minutes();
             }
