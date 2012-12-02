@@ -3,6 +3,7 @@
   <head>
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="css/ui-lightness/jquery-ui-1.9.2.custom.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
   </head>
   <body>
@@ -59,6 +60,13 @@
             </form>
           </p>
         </div>
+        <div class="span4">
+          <h3>Schedule it!</h3>
+          <p>When are you free? <input type="text" id="datepicker" />
+           for <input type="text" id="duration" /> Hour(s)</p>
+           <p id="#schedule-tip">
+           <button class="btn btn-primary skeddit">Skeddit!</button></p>
+        </div>
         <div class="span12">
           <hr>
           <div class="span3">
@@ -83,6 +91,9 @@
   <!-- <button data-fp-mimetype="image/png" data-fp-url="http://www.filepicker.io/static/img/success.png">Save File</button> -->
 
     <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/jquery-ui-1.9.2.custom.js"></script>
+    <script src="js/timepicker.js"></script>
+    <script src="js/date2.js"></script>
     <script src="js/bootstrap.js"></script>
     <script src="js/task_entry.js" type="text/javascript"></script>
     <script src="https://static.firebase.com/v0/firebase.js"></script>
@@ -91,6 +102,7 @@
       filepicker.setKey('AGVzlFdFvQqjmEVOUDtLgz');
       var singlyId = "<%- singly_id %>";
       var FB = new Firebase('https://skeddy.firebaseio.com/' + singlyId);
+      var localTodo = [];
       function loggedIn(singlyId, accessToken) {
         FB.set({'access-token': accessToken});
         window.location = '/'
@@ -144,16 +156,54 @@
 
         FB.child('todo_list').on('value', function(data) {
           $('#todo-list').children().remove();
+          localTodo = [];
           data.forEach(function(item) {
+            var itm = item.val();
+            localTodo.push({ref: item.ref().toString(), task: itm.task, loc: itm.location, time: parseInt(itm.time_estimate), notes: itm.notes});
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
-                "<div class='todo-item-line1'><span class='todo-item-task'>" + item.val().task +
-                "</span> at <span class='todo-item-location'>" + item.val().location + "</span></div>" +
+                "<div class='todo-item-line1'><span class='todo-item-task'>" + itm.task +
+                "</span> at <span class='todo-item-location'>" + itm.location + "</span></div>" +
                 "<div class='todo-item-line2'><i class='icon-time'></i><span class='todo-item-time-est'>" +
-                item.val().time_estimate + " minute(s)</span>" +
-                (item.val().notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
-                item.val().notes + "</span>" : "") + "</div></li>");
+                itm.time_estimate + " minute(s)</span>" +
+                (itm.notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
+                itm.notes + "</span>" : "") + "</div></li>");
           });
+          });
+
+        $("#datepicker").datetimepicker();
+        $(".skeddit").click(function() {
+          var startTime = new Date($('#datepicker').val());
+          var duration = 60 * parseInt($('#duration').val());
+          var schedMe = [];
+          var timeSpent = 0;
+          var updatedTime = startTime;
+          // find out which ones to sched
+          for (var i in localTodo) {
+            var todo = localTodo[i];
+            var time = todo['time'];
+            if (timeSpent + time < duration && !!todo['task']) {
+              var msg = todo['task'] + " at " + todo['loc'] + " at " + updatedTime.toString("yyyy-MM-dd HH:mm") + " for " + todo['time'] + " mins - " + todo['notes'];
+              schedMe.push({msg: msg, ref: todo['ref']});
+              updatedTime = startTime.add(time).minutes();
+            }
+          }
+          // sched them
+          for (var i in schedMe) {
+            var todo = schedMe[i];
+            console.log(todo['msg']);
+            var itemRef = new Firebase(todo['ref']);
+            itemRef.remove();
+            /*$.ajax({
+              type: "POST",
+              url: "/cal",
+              data: todo
+            }).done(function(data) {
+              console.log(data);
+              var itemRef = new Firebase(data);
+              itemRef.remove();
+            })*/;
+          }
         });
       });
 
