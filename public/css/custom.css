@@ -1,0 +1,23 @@
+.add_task_input {
+  margin-left: 0;
+}
+
+.task_autofield_container {
+  padding: 15px;
+}
+
+.task_autofield {
+  margin-top: 3px;
+  overflow: hidden;
+}
+
+.task_autofield_label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  width: 70px;
+}
+
+.task_autofield_value {
+  font-size: 11px;
+}
