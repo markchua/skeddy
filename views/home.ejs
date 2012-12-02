@@ -133,6 +133,13 @@
           $("#task_notes").text("");
         });
 
+        $('#freeform_task').keypress(function(e) {
+          if (e.which == 13) {  // The 'Enter' key.
+            jQuery(this).blur();
+            jQuery('#freeform_task_submit').focus().click();
+          }
+        });
+
         $('#filepicker').change(function(e) {
           var fpfile = e.originalEvent.fpfile;
           filepicker.read(fpfile, function(data) {
