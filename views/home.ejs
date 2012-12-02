@@ -1,42 +1,68 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script src="https://static.firebase.com/v0/firebase.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <h2>Skeddy</h2>
+          <hr>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span5 offset1">
+          <h3>Tasks</h3>
+          <ul id="todo-list">
+            <li>Test</li>
+            <li>Test</li>
+            <li>Test</li>
+            <li>Test</li>
+            <li>Test</li>
+          </ul>
+        </div>
+        <div class="span4 well">
+          <h3>Add Task</h3>
+          <div class="input-append class="span4"><input type="text" class="input-xlarge"><button class="btn btn-primary" type="button">Add</button></div>
+          <p>Or upload a todo list from a file <input id="filepicker" type="filepicker-dragdrop"/></p>
+        </div>
+      </div>
+    </div>
 
-<!-- Adds the Filepicker.io javascript library to the page -->
-<script src="https://api.filepicker.io/v1/filepicker.js"></script>
-<script type="text/javascript">
-  filepicker.setKey('AGVzlFdFvQqjmEVOUDtLgz');
-  var singlyId = "<%- singly_id %>";
-  var FB = null;
-  function loggedIn(singlyId, accessToken) {
-    FB = new Firebase('https://skeddy.firebaseio.com/' + singlyId);
-    FB.set({'access-token': accessToken});
-    window.singlyId = singlyId
-  }
 
-  $(function() {
-    $('#filepicker').change(function(e) {
-      var fpfile = e.originalEvent.fpfile;
-      //alert(JSON.stringify(fpfile));
-      filepicker.read(fpfile, function(data) {
-        var lines = data.split("\n");
-        for (var i in lines) {
-          var line = lines[i];
-          // parse each line through smart parser
-          FB.child('todo_list').push({'text': line});
-        }
+
+  <!-- <button data-fp-mimetype="image/png" data-fp-url="http://www.filepicker.io/static/img/success.png">Save File</button> -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="https://static.firebase.com/v0/firebase.js"></script>
+    <script src="https://api.filepicker.io/v1/filepicker.js"></script>
+    <script type="text/javascript">
+      filepicker.setKey('AGVzlFdFvQqjmEVOUDtLgz');
+      var singlyId = "<%- singly_id %>";
+      var FB = new Firebase('https://skeddy.firebaseio.com/' + singlyId);
+      function loggedIn(singlyId, accessToken) {
+        FB.set({'access-token': accessToken});
+      }
+
+      $(function() {
+        $('#filepicker').change(function(e) {
+          var fpfile = e.originalEvent.fpfile;
+          filepicker.read(fpfile, function(data) {
+            var lines = data.split("\n");
+            for (var i in lines) {
+              var line = lines[i];
+              // parse each line through smart parser
+              FB.child('todo_list').push({'text': line});
+            }
+          });
+        });
+
+        $('#todo-list').children().remove();
       });
-    });
-  });
 
-</script>
-
-//Use a drag drop widget
-<input id="filepicker" type="filepicker-dragdrop"/>
-
-//Or how about a save widget
-<button data-fp-mimetype="image/png"
-  data-fp-url="http://www.filepicker.io/static/img/success.png">
-     Save File</button>
-
-<input type="text" id="authcode" />
- <a target="_blank" href="https://api.singly.com/oauth/authenticate?client_id=ff47da689272e350f27f65f0cf06313d&redirect_uri=http%3A%2F%2Flocalhost%3A7464%2Fcallback&account=false&service=twitter">Twitter</a>
+    </script>
+  </body>
+</html>
