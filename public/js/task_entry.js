@@ -8,20 +8,40 @@ $(document).ready(function() {
 
 function parseFreeformTask(freeform) {
   var langTokens = new Array(freeform);
-  var remainingTokens = extractTime(langTokens);
+  var remainingTokens = extractTimeEstimate(langTokens);
+  remainingTokens = extractTime(remainingTokens);
   remainingTokens = extractLocation(remainingTokens);
   remainingTokens = extractTask(remainingTokens);
   remainingTokens = extractNotes(remainingTokens);
 }
 
-function extractTime(langTokens) {
+function extractTimeEstimate(langTokens) {
+  var TIME_EST_REGEX = /(\d+\s(?:minute|hour)s?)(.*)/g;
+
+  for (var i = 0; i < langTokens.length; i++) {
+    var token = langTokens[i];
+
+    var match = TIME_EST_REGEX.exec(token);
+    if (match != null) {
+      $("#task_time_estimate").text(match[1]);
+      var leadStrLength = token.length - match[1].length - match[2].length;
+      var newTokens = new Array(token.substring(0, leadStrLength), match[2]);
+      return splitTokens(langTokens, i, newTokens);
+    } else {
+      $("#task_time_estimate").text("");
+    }
+    return langTokens;
+  }
+}
+
+function extractTime(remainingTokens) {
   var TIME_REGEX = /(\d{1,2}(?::\d{2})?\s?(?:a\.?m\.?|p\.?m\.?)?)/g;
   var AT_TIME_REGEX = new RegExp("(at\\s)" + TIME_REGEX.source);
   var FULL_TIME_REGEX = new RegExp("()" + TIME_REGEX.source);  // The extra () group ensures our group counts are consistent.
   var FULL_AT_TIME_REGEX = new RegExp(AT_TIME_REGEX.source);
 
-  for (var i = 0; i < langTokens.length; i++) {
-    var token = langTokens[i];
+  for (var i = 0; i < remainingTokens.length; i++) {
+    var token = remainingTokens[i];
 
     // If time is specified, discard any "at" preceding the time string if it exists.
     var match = FULL_AT_TIME_REGEX.exec(token);
@@ -35,16 +55,16 @@ function extractTime(langTokens) {
       var tailStrLength = token.length - tailStrIndex;
       var leadStrLength = token.length - match[1].length - match[2].length - tailStrLength;
       var newTokens = new Array(token.substring(0, leadStrLength), token.substring(tailStrIndex));
-      return splitTokens(langTokens, i, newTokens);
+      return splitTokens(remainingTokens, i, newTokens);
     } else {
       $("#task_time").text("");
     }
   }
-  return langTokens;
+  return remainingTokens;
 }
 
 function extractLocation(remainingTokens) {
-  var LOCATION_REGEX = /(.*)(at\s)([^\.]+)/;
+  var LOCATION_REGEX = /(.*)(at\s)([^,;\.]+)/;
 
   for (var i = 0; i < remainingTokens.length; i++) {
     var token = remainingTokens[i];
