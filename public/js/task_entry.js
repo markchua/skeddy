@@ -8,16 +8,14 @@ $(document).ready(function() {
 
 function parseFreeformTask(freeform) {
   var langTokens = new Array(freeform);
-  $("#test1").text(langTokens);
   var remainingTokens = extractTime(langTokens);
   remainingTokens = extractLocation(remainingTokens);
   remainingTokens = extractTask(remainingTokens);
   remainingTokens = extractNotes(remainingTokens);
-  $("#test2").text(remainingTokens);
 }
 
 function extractTime(langTokens) {
-  var TIME_REGEX = /(\d{1,2}(:\d{2})?\s?(a\.?m\.?|p\.?m\.?)?)/g;
+  var TIME_REGEX = /(\d{1,2}(?::\d{2})?\s?(?:a\.?m\.?|p\.?m\.?)?)/g;
   var AT_TIME_REGEX = new RegExp("(at\\s)" + TIME_REGEX.source);
   var FULL_TIME_REGEX = new RegExp("()" + TIME_REGEX.source);  // The extra () group ensures our group counts are consistent.
   var FULL_AT_TIME_REGEX = new RegExp(AT_TIME_REGEX.source);
@@ -32,14 +30,14 @@ function extractTime(langTokens) {
     }
 
     if (match != null) {
-      $("#task_time").val(match[2]);
+      $("#task_time").text(match[2]);
       var tailStrIndex = token.indexOf(match[2]) + match[2].length;
       var tailStrLength = token.length - tailStrIndex;
       var leadStrLength = token.length - match[1].length - match[2].length - tailStrLength;
       var newTokens = new Array(token.substring(0, leadStrLength), token.substring(tailStrIndex));
       return splitTokens(langTokens, i, newTokens);
     } else {
-      $("#task_time").val("");
+      $("#task_time").text("");
     }
   }
   return langTokens;
@@ -53,26 +51,31 @@ function extractLocation(remainingTokens) {
 
     var match = LOCATION_REGEX.exec(token);
     if (match != null) {
-      $("#task_location").val(match[3]);
+      $("#task_location").text(match[3]);
       var newTokens = new Array(match[1], token.substring(match[1].length + match[2].length + match[3].length));
       return splitTokens(remainingTokens, i, newTokens);
     } else {
-      $("#task_location").val("");
+      $("#task_location").text("");
     }
   }
   return remainingTokens;
 }
 
 function extractTask(remainingTokens) {
-  $("#task_name").val(remainingTokens[0]);
+  $("#task_name").text(remainingTokens[0]);
   return remainingTokens.slice(1, remainingTokens.length);
 }
 
 function extractNotes(remainingTokens) {
-  var endIndex = remainingTokens.length - 1;
-  var endToken = remainingTokens[endIndex];
-  $("#task_notes").val(endToken);
-  return remainingTokens.slice(0, endIndex);
+  if (remainingTokens.length > 0) {
+    var endIndex = remainingTokens.length - 1;
+    var endToken = remainingTokens[endIndex];
+    $("#task_notes").text(endToken);
+    return remainingTokens.slice(0, endIndex);
+  } else {
+    $("#task_notes").text("");
+    return remainingTokens;
+  }
 }
 
 function splitTokens(oldTokens, at, newTokens) {
