@@ -16,6 +16,27 @@ var SINGLY_LOGINS = [
   {name: "Tumblr", service: "tumblr"},
 ];
 
+function calendar_add(calendarId, text, access_token) {
+  return {
+    hostname: "www.googleapis.com",
+    method: "POST",
+    // NEED TO PUT HACKY KEY IN HERE
+    path: "/calendar/v3/calendars/" + encodeURIComponent(calendarId) + "/events/quickAdd?text=" + encodeURIComponent(text) + "&key="
+  };
+  /* return {
+    hostname: "api.singly.com",
+    method: "POST",
+    path: "/proxy/gcal/calendars/" + encodeURIComponent(calendarId) + "/events/quickAdd?text=" + encodeURIComponent(text) + "&access_token=" + access_token
+  }; */
+}
+function calendar_list(access_token) {
+  return {
+    hostname: "api.singly.com",
+    method: "GET",
+    path: "/services/gcal/list?access_token=" + access_token
+  };
+}
+
 app.use(express.cookieParser());
 app.use(express.cookieSession({secret: "skeddydoobydoo"}));
 app.use(express.static(__dirname + '/public'));
@@ -26,6 +47,30 @@ function makeLoginPrefix(account) {
     var encodedCallbackUrl = encodeURIComponent(hostBaseUrl + '/callback');
     return "https://api.singly.com/oauth/authenticate?client_id=" + SINGLY_CLIENT_ID + "&redirect_uri=" + encodedCallbackUrl + "&account=" + account + "&service="
 }
+
+function jsonHttpsRequest(options, cb) {
+  var request = https.request(options, function(res) {
+    console.log(res.statusCode);
+    var data = "";
+    res.on('data', function (chunk) {
+      data += chunk;
+    });
+    res.on('end', function () {
+      cb(JSON.parse(data));
+    });
+  });
+  request.end();
+}
+
+/* For testing purposes */
+app.get('/cal', function(req, res) {
+  var opts = calendar_add(req.session.calendar, "Dinnar at 7pm tomorrow", req.session.accessToken);
+  console.log("https://" + opts.hostname + opts.path);
+  jsonHttpsRequest(opts, function(data) {
+    console.log(data);
+    res.end();
+  });
+});
 
 app.get('/', function(req, res) {
   if (!!req.session && !!req.session.singlyId) {
@@ -56,6 +101,11 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
+function logInScriptlet(res, singlyId, accessToken) {
+  res.send('<script type="text/javascript">window.opener.loggedIn("' + singlyId + '","' + accessToken + '");window.close();</script>');
+  res.end();
+}
+
 app.get('/callback', function(req, res) {
   singly.getAccessToken(req.param('code'), function(err, resp, auth) {
     var accessToken = auth.access_token;
@@ -63,8 +113,23 @@ app.get('/callback', function(req, res) {
       var singlyId = profiles.body.id;
       req.session.singlyId = singlyId;
       req.session.profiles = profiles.body;
-      res.send('<script type="text/javascript">window.opener.loggedIn("' + singlyId + '","' + accessToken + '");window.close();</script>');
-      res.end();
+      req.session.accessToken = accessToken;
+      if (!!req.session.profiles.gcal) {
+        var opts = calendar_list(req.session.accessToken);
+        console.log("https://" + opts.hostname + opts.path);
+        jsonHttpsRequest(opts, function(data) {
+          for (var i in data) {
+            var entry = data[i].data;
+            if (entry.accessRole === 'owner' && entry.id.indexOf("calendar.google.com") === -1) {
+              req.session.calendar = entry.id;
+              console.log(entry.id);
+            }
+          }
+          logInScriptlet(res, singlyId, accessToken);
+        });
+      } else {
+        logInScriptlet(res, singlyId, accessToken);
+      }
     });
   });
 });

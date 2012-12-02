@@ -13,7 +13,7 @@ var req = https.request({
     data = JSON.parse(data);
     for (var i in data) {
       var service = data[i];
-      if (!!service.icons && !!service.hasTestKeys && whitelist.indexOf(i) != -1) {
+      if (!!service.icons && !!service.hasTestKeys && whitelist.indexOf(i) !== -1) {
         services[i] = {name: service.name, icon: service.icons[2].source};
       }
     }
