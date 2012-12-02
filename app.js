@@ -8,7 +8,7 @@ var SINGLY_CLIENT_ID = 'ff47da689272e350f27f65f0cf06313d';
 var singly = require('singly')(SINGLY_CLIENT_ID, 'cd161e1dc29cc8796d67ba56f901744f',
     hostBaseUrl + '/callback');
 var SINGLY_LOGINS = [
-  {name: "Google", service: "gcal"},
+  {name: "Google", service: "gcal", extra: "&scope=" + encodeURIComponent("https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile")},
   {name: "Twitter", service: "twitter"},
   {name: "Facebook", service: "facebook"},
   {name: "foursquare", service: "foursquare"},
@@ -17,17 +17,21 @@ var SINGLY_LOGINS = [
 ];
 
 function calendar_add(calendarId, text, access_token) {
+  /*
   return {
     hostname: "www.googleapis.com",
     method: "POST",
+    headers: {
+      'Authorization': "OAuth ya29.AHES6ZRnAcb3mgjHsu3_A2wZS7-47UmVTUK4NlhpFOHLElirNHac"
+    },
     // NEED TO PUT HACKY KEY IN HERE
-    path: "/calendar/v3/calendars/" + encodeURIComponent(calendarId) + "/events/quickAdd?text=" + encodeURIComponent(text) + "&key="
-  };
-  /* return {
+    path: "/calendar/v3/calendars/" + encodeURIComponent(calendarId) + "/events/quickAdd?text=" + encodeURIComponent(text) + "&key=AIzaSyCoQNc0qWvGomThjWDEon2u1qTPHgdZJr8"
+  };*/
+  return {
     hostname: "api.singly.com",
     method: "POST",
     path: "/proxy/gcal/calendars/" + encodeURIComponent(calendarId) + "/events/quickAdd?text=" + encodeURIComponent(text) + "&access_token=" + access_token
-  }; */
+  };
 }
 function calendar_list(access_token) {
   return {
@@ -48,6 +52,11 @@ function makeLoginPrefix(account) {
     return "https://api.singly.com/oauth/authenticate?client_id=" + SINGLY_CLIENT_ID + "&redirect_uri=" + encodedCallbackUrl + "&account=" + account + "&service="
 }
 
+function makeLoginPrefix2(account) {
+    var encodedCallbackUrl = encodeURIComponent(hostBaseUrl + '/callback');
+    return "https://api.singly.com/oauth/authenticate?scope=" + encodeURIComponent("https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.profile") + "&client_id=" + SINGLY_CLIENT_ID + "&redirect_uri=" + encodedCallbackUrl + "&account=" + account + "&service="
+}
+
 function jsonHttpsRequest(options, cb) {
   var request = https.request(options, function(res) {
     console.log(res.statusCode);
@@ -64,7 +73,7 @@ function jsonHttpsRequest(options, cb) {
 
 /* For testing purposes */
 app.get('/cal', function(req, res) {
-  var opts = calendar_add(req.session.calendar, "Dinnar at 7pm tomorrow", req.session.accessToken);
+  var opts = calendar_add(req.session.calendar, "Dinner", req.session.accessToken);
   console.log("https://" + opts.hostname + opts.path);
   jsonHttpsRequest(opts, function(data) {
     console.log(data);

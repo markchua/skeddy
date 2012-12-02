@@ -2,31 +2,37 @@
 <html lang="en">
   <head>
     <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container">
+    <div class="container span9 offset2">
       <div class="row">&nbsp;</div>
       <div class="hero-unit">
         <h1>Skeddy</h1>
-        <p>Not just a TODO list- actually get your stuff done. Log in with Google, Twitter, Facebook, and more!</p>
+        <p>Actually get your stuff done. We're going to make it easy to create tasks, and optimize a schedule around your free time. Keeping it dead simple. Log in with Google, Twitter, Facebook, and more!</p>
         <p>
           <% include login %>
+          <span class="help-block">For the full experience, log in with Google!</span>
         </p>
       </div>
       <div class="row">
-        <div class="span4">
-          <h2>Never forget again</h2>
-          <p>We schedule your tasks on your calendar so you never forget to do them again. Who checks their todo list anyway?</p>
+        <div class="span3">
+          <h3>Never forget again</h3>
+          <p>Tell us when you're free and we'll automatically schedule it on your calendar.</p>
         </div>
-        <div class="span4">
-          <h2>Easily add tasks</h2>
+        <div class="span3">
+          <h3>Easily add tasks</h3>
           <p>Upload your list of tasks from anywhere and let us figure out what they mean.</p>
         </div>
-        <div class="span4">
-          <h2>Location aware</h2>
-          <p>We'll factor in the extra commute time for each task.</p>
+        <div class="span3">
+          <h3>Location aware</h3>
+          <p>We'll factor in the extra commute time for each task and optimize for proximity.</p>
         </div>
       </div>
+      <footer>
+        <hr>
+        <p>&copy; 2012 Andrew Wong (<a href="https://twitter.com/eventrove">@eventrove</a>) and Mark Chua (<a href="http://twitter.com/mkc">@mkc</a>)</p>
+      </footer>
     </div>
     <script src="js/jquery-1.8.3.min.js"></script>
     <script src="js/bootstrap.js"></script>
