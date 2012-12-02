@@ -86,6 +86,7 @@
       var FB = new Firebase('https://skeddy.firebaseio.com/' + singlyId);
       function loggedIn(singlyId, accessToken) {
         FB.set({'access-token': accessToken});
+        window.location = '/'
       }
 
       $(function() {
