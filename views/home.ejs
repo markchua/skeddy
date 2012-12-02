@@ -162,7 +162,8 @@
             localTodo.push({ref: item.ref().toString(), task: itm.task, loc: itm.location, time: parseInt(itm.time_estimate), notes: itm.notes});
             var removeIcon = '<a data-ref="' + item.ref() + '" href="#"><i class="icon-remove pull-right"></i></a>';
             $('#todo-list').append('<li class="todo-item">' + removeIcon +
-                "<div class='todo-item-line1'>" + itm.task + " at " + itm.location + "</div>" +
+                "<div class='todo-item-line1'><span class='todo-item-task'>" + itm.task +
+                "</span> at <span class='todo-item-location'>" + itm.location + "</span></div>" +
                 "<div class='todo-item-line2'><i class='icon-time'></i><span class='todo-item-time-est'>" +
                 itm.time_estimate + " minute(s)</span>" +
                 (itm.notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
