@@ -1,9 +1,40 @@
+.todo-item {
+  height: 55px;
+}
+
+.todo-item-line2 {
+  color: #B87;
+  font-size: smaller;
+  padding-left: 10px;
+}
+
+.todo-item-notes {
+  padding-left: 4px;
+}
+
+.todo-item-time-est {
+  display: inline-block;
+  padding-left: 4px;
+  width: 20%;
+}
+
+.icon-info-sign {
+  margin-top: 0;
+  opacity: 0.4;
+}
+
+.icon-time {
+  margin-top: 0;
+  opacity: 0.4;
+}
+
 .add_task_input {
   margin-left: 0;
 }
 
 .task_autofield_container {
-  padding: 15px;
+  color: #777;
+  padding: 0 0 15px 30px;
 }
 
 .task_autofield {
