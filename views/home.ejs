@@ -9,12 +9,15 @@
     <div class="container">
       <div class="row">
         <div class="span12">
+          <div class="pull-right">
+            <h5><a href="/logout">Log out</a></h5>
+          </div>
           <h2>Skeddy</h2>
           <hr>
         </div>
       </div>
       <div class="row">
-        <div class="span5 offset1">
+        <div class="span5">
           <h3>Tasks</h3>
           <ul id="todo-list" class="unstyled">
           </ul>
@@ -22,7 +25,7 @@
         <div class="span4 well">
           <h3>Add Task</h3>
           <div class="add_task_input input-append span4">
-            <input id="freeform_task" type="text" class="input-xlarge"><button class="btn btn-primary" type="button">Add</button>
+            <input id="freeform_task" type="text" class="input-large"><button class="btn btn-primary" type="button">Add</button>
             <div class="task_autofield_container">
               <div class="task_autofield">
                 <span class="task_autofield_label">Task:</span>
@@ -43,6 +46,22 @@
             </div>
           </div>
           <p>Or upload a todo list from a file <input id="filepicker" type="filepicker-dragdrop"/></p>
+        </div>
+        <div class="span12">
+          <hr>
+          <div class="span3">
+            <h5>Connected With</h5>
+            <p>
+              <% for (var i in connected_accounts) {%>
+                <img src="http://assets.singly.com/service-icons/32px/<%= connected_accounts[i].service %>.png" width="32" height="32">
+              <% } %>
+            </p>
+          </div>
+          <div class="span3">
+            <h5>Connect More Accounts</h5>
+            <p><% include login %></p>
+            <% if (!hasGoogle) { %><span class="help-block">For the full experience, please connect with Google</span><% } %>
+          </div>
         </div>
       </div>
     </div>
