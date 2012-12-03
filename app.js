@@ -71,7 +71,6 @@ function jsonHttpsRequest(options, cb) {
   request.end();
 }
 
-/* For testing purposes */
 app.post('/cal', function(req, res) {
   var opts = calendar_add(req.session.calendar, req.param("msg"), req.session.accessToken);
   console.log("https://" + opts.hostname + opts.path);

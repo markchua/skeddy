@@ -63,6 +63,7 @@
         <div class="span6">&nbsp;</div>
         <div class="span4 offset1 well">
           <h3>Schedule it!</h3>
+          <p>CURRENTLY THIS WILL NOT WORK (WILL HOOKUP AFTER PENDING SINGLY FIXES)</p>
           <p>Just tell us when you are free and we'll schedule the tasks</p>
           <p>When are you free?<br><input type="text" id="datepicker" />
            for <input type="text" class="input-mini" id="duration" /> hour(s)</p>
@@ -177,7 +178,7 @@
                 itm.time_estimate + " minute(s)</span>" +
                 (itm.notes.length > 0 ? "<i class='icon-info-sign'></i><span class='todo-item-notes'>" +
                 itm.notes + "</span>" : "") + "</div></li>");
-          });
+            });
           });
 
         $("#datepicker").datetimepicker();
